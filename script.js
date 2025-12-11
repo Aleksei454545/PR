@@ -1,4 +1,5 @@
 const $ = (id) => document.getElementById(id);
+
 const $btn = $('btn-kick');
 const $btnUlt = $('btn-ult');
 const $logs = $('logs');
@@ -6,14 +7,18 @@ const $logs = $('logs');
 const $kickLeft = $('kick-left');
 const $ultLeft  = $('ult-left');
 
-const KICK_LIMIT = 5; 
-const ULT_LIMIT  = 2; 
+// --- ЛІМІТИ НАТИСКАНЬ ---
+const KICK_LIMIT = 5;  // трохи більше 4 :)
+const ULT_LIMIT  = 2;  // як приклад
 
+// Початкові значення виводимо одразу при завантаженні
 if ($kickLeft) $kickLeft.textContent = KICK_LIMIT;
 if ($ultLeft)  $ultLeft.textContent  = ULT_LIMIT;
 
 const random = (num) => Math.ceil(Math.random() * num);
 
+
+// --- ГРАВЦІ ТА HP ---
 
 const createPlayer = ({ name, defaultHP, hpId, barId }) => {
   const elHP = $(hpId);
@@ -102,7 +107,9 @@ const enemy2 = createPlayer({
 
 const targets = [enemy, enemy2];
 
-// Лог
+
+// --- ЛОГИ БОЮ ---
+
 function makeLogLine({ attacker, target, damage, left, total }) {
   const template = logs[random(logs.length) - 1];
   return (
@@ -144,8 +151,10 @@ function enemyCounterAttack() {
 }
 
 
+// --- ЗАМІКАННЯ ДЛЯ ЛІЧИЛЬНИКІВ ---
+
 function createClickCounter(limit, onChange) {
-  let count = 0;
+  let count = 0; // закрита змінна (замикання!)
 
   return function (buttonName) {
     if (count >= limit) {
@@ -167,6 +176,7 @@ function createClickCounter(limit, onChange) {
   };
 }
 
+// Створюємо замикання для кожної кнопки
 const kickCounter = createClickCounter(KICK_LIMIT, (left) => {
   if ($kickLeft) $kickLeft.textContent = left;
 });
@@ -175,11 +185,12 @@ const ultCounter = createClickCounter(ULT_LIMIT, (left) => {
 });
 
 
+// --- ОБРОБНИКИ КНОПОК З УРАХУВАННЯМ ЛІМІТУ ---
 
 $btn.addEventListener('click', () => {
   if (!isAlive(mainHero)) return;
 
-  // 1) Перевіряємо, чи можна ще тиснути
+  // 1) Перевіряємо замиканням, чи ще можна натискати
   const canClick = kickCounter('Thunder Jolt');
   if (!canClick) {
     $btn.disabled = true;
@@ -198,7 +209,6 @@ $btn.addEventListener('click', () => {
   enemyCounterAttack();
 });
 
-// Ульта
 $btnUlt.addEventListener('click', () => {
   if (!isAlive(mainHero)) return;
 
@@ -219,6 +229,8 @@ $btnUlt.addEventListener('click', () => {
   enemyCounterAttack();
 });
 
+
+// --- ПОЧАТКОВИЙ РЕНДЕР HP ---
 mainHero.renderHP();
 enemy.renderHP();
 enemy2.renderHP();
