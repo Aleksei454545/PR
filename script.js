@@ -222,3 +222,4 @@ $btnUlt.addEventListener('click', () => {
 mainHero.renderHP();
 enemy.renderHP();
 enemy2.renderHP();
+
